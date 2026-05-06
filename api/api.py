@@ -1,31 +1,36 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 
 app = FastAPI()
 
-db = FAISS.load_local("vectordb", OpenAIEmbeddings())
+db = FAISS.load_local("vectordb", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
 llm = ChatOpenAI(temperature=0)
 
-class Q(BaseModel):
+class Query(BaseModel):
     question: str
 
 @app.post("/chat")
-def chat(q: Q):
+def chat(q: Query):
     docs = db.similarity_search(q.question, k=3)
 
     context = "\n\n".join([d.page_content for d in docs])
 
-    answer = llm.predict(f"""
-You are an IT incident assistant.
+    response = llm.invoke(
+        f"""
+You are a ServiceNow incident assistant.
 
 Context:
 {context}
 
-Question: {q.question}
-Answer:
-""")
+Question:
+{q.question}
 
-    return {"answer": answer}
+Answer clearly:
+"""
+    )
+
+    return {
+        "answer": response.content
+    }

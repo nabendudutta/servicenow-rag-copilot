@@ -1,10 +1,14 @@
-from langchain.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
-docs = DirectoryLoader("data").load()
-chunks = CharacterTextSplitter(500, 50).split_documents(docs)
+loader = DirectoryLoader("data/markdown")
+docs = loader.load()
+
+chunks = CharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(docs)
 
 db = FAISS.from_documents(chunks, OpenAIEmbeddings())
 db.save_local("vectordb")
+
+print("Vector DB built")

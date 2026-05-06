@@ -13,7 +13,7 @@ function activate(context) {
     );
 
     panel.webview.html = `
-      <h2>SN Copilot</h2>
+      <h2>ServiceNow Copilot</h2>
       <input id="q" style="width:80%" placeholder="Ask something..." />
       <button onclick="ask()">Ask</button>
       <pre id="out"></pre>
@@ -22,8 +22,7 @@ function activate(context) {
         const vscode = acquireVsCodeApi();
 
         function ask() {
-          const q = document.getElementById('q').value;
-          vscode.postMessage({q});
+          vscode.postMessage({ q: document.getElementById('q').value });
         }
 
         window.addEventListener('message', e => {
@@ -32,10 +31,11 @@ function activate(context) {
       </script>
     `;
 
-    panel.webview.onDidReceiveMessage(async m => {
-      const res = await axios.post('http://localhost:8000/chat', {
-        question: m.q
+    panel.webview.onDidReceiveMessage(async msg => {
+      const res = await axios.post("http://localhost:8000/chat", {
+        question: msg.q
       });
+
       panel.webview.postMessage(res.data.answer);
     });
 

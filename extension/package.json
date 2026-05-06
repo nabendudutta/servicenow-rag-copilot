@@ -1,0 +1,12 @@
+{
+  "name": "servicenow-copilot",
+  "activationEvents": ["onCommand:sn.copilot"],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sn.copilot",
+        "title": "Open ServiceNow Copilot"
+      }
+    ]
+  }
+}
