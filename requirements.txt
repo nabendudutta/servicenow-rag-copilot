@@ -31,3 +31,4 @@ openai==1.40.0
 # Data processing
 # =========================
 tqdm==4.66.4
+unstructured
