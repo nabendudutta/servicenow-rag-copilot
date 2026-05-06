@@ -1,0 +1,37 @@
+name: Sync ServiceNow Data
+
+on:
+  schedule:
+    - cron: "0 0,8,16 * * *"   # 3 times daily (UTC)
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - run: pip install -r requirements.txt
+
+      - name: Fetch incidents
+        env:
+          SN_INSTANCE: ${{ secrets.SN_INSTANCE }}
+          SN_USER: ${{ secrets.SN_USER }}
+          SN_PASS: ${{ secrets.SN_PASS }}
+        run: python scripts/fetch_incidents.py
+
+      - run: python scripts/convert_to_md.py
+      - run: python scripts/build_vector_db.py
+
+      - name: Commit updated KB
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@company.com"
+          git add data/ vectordb/
+          git commit -m "Auto sync ServiceNow KB" || echo "No changes"
+          git push
