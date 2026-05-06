@@ -15,7 +15,8 @@ python-dotenv==1.0.1
 # =========================
 langchain==0.2.14
 langchain-community==0.2.12
-langchain-openai==0.1.22
+#langchain-openai==0.1.22
+langchain-openai >= 0.1.0
 
 # =========================
 # Vector database
@@ -25,7 +26,8 @@ faiss-cpu==1.8.0.post1
 # =========================
 # LLM provider
 # =========================
-openai==1.40.0
+#openai==1.40.0
+openai >= 1.30.0
 
 # =========================
 # Data processing
